@@ -1,29 +1,63 @@
-use std::io;
+use std::io::{self, Write};
 use std::vec::Vec;
 
 fn main() {
-    print!("Enter the amount of items you want in your list: ");
-    let mut num_str: String = String::new();
-    let mut thing: String = String::new();
-    io::stdin()
-        .read_line(&mut num_str)
-        .expect("Failed to read line.");
+    let mut vec: Vec<String> = Vec::new();
 
-    let num: i32 = num_str.parse().expect("Unable to parse");
+    println!("-----WELCOME-----");
+    println!("Use 'help' to get a list of commands!");
 
-    let mut vec: Vec<&str> = Vec::new();
+    loop {
+        let mut input = String::new();
+        print!("> ");
+        io::stdout().flush().expect("Unable to flush stdout");
 
-    for _ in 0..num {
         io::stdin()
-            .read_line(&mut thing)
-            .expect("Failed to read line.");
+            .read_line(&mut input)
+            .expect("Unable to read line. Please try again...");
 
-        vec.push(&thing);
+        let input = input.to_lowercase();
+        match input.trim() {
+            // Add item
+            "add" => {
+                print!("Enter item to add: ");
+                io::stdout().flush().expect("Unable to flush stdout");
+                let mut item = String::new();
 
-        // IDK WHAT IS GOING ON HERE
-    }
+                io::stdin()
+                    .read_line(&mut item)
+                    .expect("Unable to read item.");
 
-    for x in vec {
-        println!("{:?}", x)
+                vec.push(item.clone());
+
+                println!("Added {} to list!", item.trim());
+            }
+            // Remove item
+            "remove" => {
+                print!("Enter item to remove: ");
+                io::stdout().flush().expect("Unable to flush stdout");
+                let mut item = String::new();
+
+                io::stdin()
+                    .read_line(&mut item)
+                    .expect("Unable to read item.");
+
+                for i in 0..vec.len() {
+                    if vec[i] == item {
+                        vec.remove(i);
+                        break;
+                    }
+                }
+                println!("Removed {} from the list.", item.trim());
+            }
+            "view" => {
+                for i in 0..vec.len() {
+                    print!("{}. {}", i + 1, vec[i]);
+                }
+            }
+            "help" => println!("add, remove, view, help, exit"),
+            "exit" => break,
+            _ => println!("Unknown command"),
+        }
     }
 }
